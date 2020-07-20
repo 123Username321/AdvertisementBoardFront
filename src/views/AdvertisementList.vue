@@ -1,5 +1,4 @@
 <template>
-    <div class="hello">
         <div id="advertisements">
             <div>
                 <table border="1">
@@ -23,18 +22,13 @@
             </div>
             <button v-on:click="getAdvertisements()">Get</button>
         </div>
-    </div>
 </template>
 
 <script>
-//import Vue from 'vue';
 import axios from 'axios'
 
 export default {
-    name: 'Start',
-    props: {
-        msg: String
-    },
+    name: 'AdvertisementList',
     data: function() {
             return { advs: null };
     },
