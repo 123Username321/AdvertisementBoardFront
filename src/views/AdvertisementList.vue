@@ -1,6 +1,9 @@
 <template>
         <div id="advertisements">
             <div>
+                <router-view></router-view>
+            </div>
+            <div>
                 <table border="1">
                     <tr>
                         <th>ID</th>
@@ -11,7 +14,7 @@
                     </tr>
                     <template v-for="adv in advs">
                         <tr v-bind:key="adv.id">
-                            <td>{{ adv.id }}</td>
+                            <td><a :href="'http://localhost:3000/advertisements/' + adv.id">{{ adv.id }}</a></td>
                             <td>{{ adv.title }}</td>
                             <td>{{ adv.description }}</td>
                             <td>{{ adv.addDateTime }}</td>
@@ -29,7 +32,7 @@ import axios from 'axios'
 export default {
     name: 'AdvertisementList',
     data: function() {
-            return { advs: null };
+            return { advs: [] };
     },
     methods: {
         getAdvertisements: function() {
@@ -38,7 +41,7 @@ export default {
     },
     mounted: function(){
         this.getAdvertisements();
-    },
+    }
 }
 </script>
 

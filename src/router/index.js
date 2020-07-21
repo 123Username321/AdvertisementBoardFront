@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import AdvertisementList from '../views/AdvertisementList.vue'
+import Advertisement from '../views/Advertisement.vue'
 
 Vue.use(VueRouter)
 
@@ -12,7 +13,13 @@ Vue.use(VueRouter)
   {
     path: '/advertisements',
     name: 'AdvertisementList',
-    component: AdvertisementList
+    component: AdvertisementList,
+    children: [
+      {
+        path: ':id',
+        component: Advertisement
+      }
+    ]
   }
 ]
 
