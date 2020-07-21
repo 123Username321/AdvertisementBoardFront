@@ -20,7 +20,6 @@
                     </template>
                 </table>
             </div>
-            <button v-on:click="getAdvertisements()">Get</button>
         </div>
 </template>
 
@@ -38,7 +37,7 @@ export default {
         }
     },
     mounted: function(){
-        axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
+        this.getAdvertisements();
     },
 }
 </script>
