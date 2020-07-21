@@ -1,9 +1,6 @@
 <template>
         <div id="advertisements">
             <div>
-                <router-view></router-view>
-            </div>
-            <div>
                 <table border="1">
                     <tr>
                         <th>ID</th>
@@ -32,14 +29,19 @@ import axios from 'axios'
 export default {
     name: 'AdvertisementList',
     data: function() {
-            return { advs: [] };
+            return { 
+                advs: null,
+                titleInputValue: '',
+                descriptionInputValue: '',
+                pageSizeSelector: ''
+            };
     },
     methods: {
         getAdvertisements: function() {
             axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
         }
     },
-    mounted: function(){
+    mounted: function() {
         this.getAdvertisements();
     }
 }
