@@ -9,7 +9,7 @@ Vue.use(VueRouter)
   const routes = [
   {
     path: '/',
-    redirect: { name: 'advertisements' }
+    redirect: { name: 'advertisementList' }
   },
   {
     path: '/advertisements',
@@ -17,7 +17,6 @@ Vue.use(VueRouter)
     children: [
       {
         path: '',
-        name: 'advertisements',
         redirect: { name: 'advertisementList' }
       },
       {
@@ -27,6 +26,7 @@ Vue.use(VueRouter)
       },
       {
         path: ':id',
+        name: 'advertisement',
         component: Advertisement
       }
     ]

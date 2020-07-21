@@ -29,7 +29,12 @@ import axios from 'axios'
 export default {
     name: 'AdvertisementList',
     data: function() {
-            return { advs: [] };
+            return { 
+                advs: null,
+                titleInputValue: '',
+                descriptionInputValue: '',
+                pageSizeSelector: ''
+            };
     },
     methods: {
         getAdvertisements: function() {
