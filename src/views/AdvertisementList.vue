@@ -32,7 +32,7 @@ import axios from 'axios'
 export default {
     name: 'AdvertisementList',
     data: function() {
-            return { advs: null };
+            return { advs: [] };
     },
     methods: {
         getAdvertisements: function() {

@@ -1,5 +1,5 @@
 <template>
-    <div id="advertisement-info">
+    <div id="advertisement-info" v-if="adv">
         <h3>Route ID: {{ $route.params.id }}</h3>
         <p>ID: {{ adv.id }}</p>
         <p>Заголовок: {{ adv.title }}</p>
@@ -20,7 +20,7 @@ export default {
     },
     methods: {
         getAdvertisements: function() {
-            axios.get('http://localhost:8080/advertisement/' + this.$route.params.id).then(response => (this.adv = response.data, console.log(this.adv)));
+            axios.get('http://localhost:8080/advertisement/' + this.$route.params.id).then(response => (this.adv = response.data));
         }
     },
     filters: {
