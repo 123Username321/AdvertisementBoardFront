@@ -1,9 +1,6 @@
 <template>
         <div id="advertisements">
             <div>
-                <router-view></router-view>
-            </div>
-            <div>
                 <table border="1">
                     <tr>
                         <th>ID</th>
@@ -39,7 +36,7 @@ export default {
             axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
         }
     },
-    mounted: function(){
+    mounted: function() {
         this.getAdvertisements();
     }
 }
