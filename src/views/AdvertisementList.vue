@@ -36,7 +36,10 @@ export default {
         getAdvertisements: function() {
             axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
         }
-    }
+    },
+    mounted: function(){
+        axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
+    },
 }
 </script>
 
