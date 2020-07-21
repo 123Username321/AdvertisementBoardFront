@@ -19,7 +19,7 @@ export default {
         return { adv: null }
     },
     methods: {
-        getAdvertisements: function() {
+        getAdvertisement: function() {
             axios.get('http://localhost:8080/advertisement/' + this.$route.params.id).then(response => (this.adv = response.data));
         }
     },
@@ -29,7 +29,7 @@ export default {
         }
     },
     mounted: function(){
-        this.getAdvertisements();
+        this.getAdvertisement();
     }
 }
 </script>
