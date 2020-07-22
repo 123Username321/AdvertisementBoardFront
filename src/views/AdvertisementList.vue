@@ -17,7 +17,7 @@
                     <select v-model="filters.category" v-on:change="isNewFilters=true;updateOnEvent();">
                         <option v-for="elem in categories" :key="elem.id" :value="elem.id">{{ elem.name }}</option>
                     </select>
-                    <button v-on:click="filters.category = 0;updateOnEvent();">{{ filters.category }}</button>
+                    <button v-on:click="filters.category = 0;updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>От: </label>
@@ -86,11 +86,6 @@ export default {
                 pageNumber: 1,
                 totalPages: 1,
                 isPaging: false,
-                // page: {
-                //     number: 1,
-                //     total: 1,
-                //     isPaging: false
-                // },
                 filters: {
                     title: '',
                     description: '',
@@ -136,7 +131,7 @@ export default {
             if (sortParams != false) {
                 request += '?sort=' + encodeURI(JSON.stringify(sortParams));
             }
-            console.log(request);
+            
             axios.get(request, {
                 params: {
                     title: this.filters.title === '' ? null : this.filters.title,
@@ -208,7 +203,6 @@ export default {
                 }
             }
 
-            console.log(this.sort);
             this.refreshList();
         },
         getSort: function() {
@@ -224,11 +218,8 @@ export default {
                     }
                 }
             }
-            console.log(sortParams);
+            
             return sortParams;
-        },
-        getAdvertisements: function() {
-            axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data, console.log(response)));
         }
     },
     filters: {
@@ -237,9 +228,8 @@ export default {
         }
     },
     mounted: function() {
-        this.categories = [{ id: 0, name: "Все" }];
-        axios.get('http://localhost:8080/category/list').then(response => {this.categories = this.categories.concat(response.data);});
-        this.getAdvertisements();
+        axios.get('http://localhost:8080/category/list').then(response => this.categories = [{id: 0, name: 'Все'}, ...response.data]);
+        axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
     }
 }
 </script>
