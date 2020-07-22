@@ -139,17 +139,17 @@ export default {
     },
     methods: {
         refreshList: function() {
-            let request = 'http://localhost:8080/advertisement/list?';
+            let request = 'http://localhost:8080/advertisement/list';
 
             let sortParams = this.getSort();
-            if (sortParams !== []) {
-                request += 'sort=' + encodeURI(JSON.stringify(sortParams));
+            if (sortParams != false) {
+                request += '?sort=' + encodeURI(JSON.stringify(sortParams));
             }
             console.log(request);
             axios.get(request, {
                 params: {
-                    title: this.filters.title,
-                    description: this.filters.description,
+                    title: this.filters.title === '' ? null : this.filters.title,
+                    description: this.filters.description === '' ? null : this.filters.description,
                     category: this.filters.category === 'Все' ? null : this.categories.indexOf(this.filters.category),
                     start_date: this.filters.startDate === null ? null : this.filters.startDate + ' 00:00:00',
                     end_date: this.filters.endDate === null ? null : this.filters.endDate + ' 23:59:59',
