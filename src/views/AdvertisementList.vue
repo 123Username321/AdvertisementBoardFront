@@ -26,7 +26,7 @@
                     <button v-on:click="filters.endDate = null">Сбросить</button>
                 </div>
                 <div>
-                    <button v-on:click="refreshList">Обновить</button>
+                    <button v-on:click="refreshButtonClick">Обновить</button>
                 </div>
                 <div>
                     <label>Размер страницы: </label>
@@ -79,18 +79,10 @@ export default {
     data: function() {
             return { 
                 advs: null,
-                lastRequest: '',
                 pageSizeSelector: '',
                 pageNumber: 1,
                 totalPages: 1,
                 isPaging: false,
-                inputs: {
-                    titleTag: '',
-                    descriptionTag: '',
-                    categoryTag: '',
-                    startDateTag: null,
-                    endDateTag: null
-                },
                 filters: {
                     title: '',
                     description: '',
@@ -112,15 +104,8 @@ export default {
             };
     },
     methods: {
-        refreshList: function(isChangePage = false) {
+        refreshList: function() {
             let request = 'http://localhost:8080/advertisement/list';
-
-            if (isChangePage === true) {
-                this.filters = Object.assign({}, this.lastFilters);
-            }
-            else {
-                this.pageNumber = 1;
-            }
 
             request += `?start_timestamp=${this.filters.startDate === null ? '2000-01-01' : this.filters.startDate} 00:00:00`;
             request += `&end_timestamp=${this.filters.endDate === null ? '2099-12-31' : this.filters.endDate} 23:59:59`;
@@ -138,11 +123,10 @@ export default {
                 request += `&page_size=${this.pageSizeSelector}`;
                 request += `&page_number=${this.pageNumber}`;
             }
-            
+            console.log(this.pageNumber)
+
             axios.get(request).then(response => {
                 console.log(request);
-                this.lastRequest = request;
-                this.lastFilters = Object.assign({}, this.filters);
 
                 if (this.pageSizeSelector === 'Все') {
                     this.advs = response.data;
@@ -153,6 +137,11 @@ export default {
                 }
             });
         },
+        refreshButtonClick() {
+            this.pageNumber = 1;
+            this.refreshList();
+            this.lastFilters = Object.assign({}, this.filters);
+        },
         setPaging: function() {
             if (this.pageSizeSelector === 'Все') {
                 this.isPaging = false;
@@ -160,13 +149,15 @@ export default {
             else {
                 this.isPaging = true;
             }
+
             this.toPage(1);
         },
         toPage: function(i) {
             if (i < 1) i = 1;
             if (i > this.totalPages) i = this.totalPages;
             this.pageNumber = i;
-            this.refreshList(true);
+            this.filters = Object.assign({}, this.lastFilters);
+            this.refreshList();
         },
         getAdvertisements: function() {
             axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
