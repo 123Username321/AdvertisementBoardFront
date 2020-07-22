@@ -124,7 +124,7 @@ export default {
             };
     },
     methods: {
-        refreshList: function() {
+        updateList: function() {
             let request = 'http://localhost:8080/advertisement/list';
 
             let sortParams = this.getSort();
@@ -154,7 +154,7 @@ export default {
         },
         updateOnEvent: function() {
             this.pageNumber = 1;
-            this.refreshList();
+            this.updateList();
         },
         setPaging: function() {
             if (this.pageSizeSelector === 'Все') {
@@ -177,7 +177,7 @@ export default {
                 this.pageNumber = i;
             }
 
-            this.refreshList();
+            this.updateList();
         },
         setSort: function(name) {
             if (this.sort[name].isSort === false) {
@@ -203,7 +203,7 @@ export default {
                 }
             }
 
-            this.refreshList();
+            this.updateList();
         },
         getSort: function() {
             let sortParams = [];
@@ -221,7 +221,7 @@ export default {
             
             return sortParams;
         },
-        setCategories: function() {
+        loadCategories: function() {
             axios.get('http://localhost:8080/category/list').then(response => this.categories = [{id: 0, name: 'Все'}, ...response.data]);
         }
     },
@@ -231,8 +231,8 @@ export default {
         }
     },
     mounted: function() {
-        this.setCategories();
-        this.refreshList();
+        this.loadCategories();
+        this.updateList();
     }
 }
 </script>
