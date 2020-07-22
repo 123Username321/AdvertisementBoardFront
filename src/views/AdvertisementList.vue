@@ -12,7 +12,7 @@
                     <input type="text" v-model="filters.description" v-on:change="isNewFilters=true;" @keyup.enter="updateOnEvent" />
                     <button v-on:click="filters.description = '';updateOnEvent();">Сбросить</button>
                 </div>
-                <div v-if="categories">
+                <div>
                     <label>Категория: </label>
                     <select v-model="filters.category" v-on:change="isNewFilters=true;updateOnEvent();">
                         <option v-for="elem in categories" :key="elem.id" :value="elem.id">{{ elem.name }}</option>
@@ -120,7 +120,7 @@ export default {
                     }
                 },
                 sortNumber: 0,
-                categories: null
+                categories: []
             };
     },
     methods: {
