@@ -11,7 +11,7 @@
                 </div>
                 <div>
                     <label>Категория: </label>
-                    <select v-model="filters.category">
+                    <select v-model="filters.category" v-on:change="refreshCategorySelect">
                         <option v-for="elem in categories" :key="elem">{{ elem }}</option>
                     </select>
                 </div>
@@ -90,6 +90,8 @@ export default {
                     startDate: null,
                     endDate: null
                 },
+                sortColumns: 0,
+                sort: null,
                 lastFilters: null,
                 categories: [
                     'Все',
@@ -136,10 +138,16 @@ export default {
                 }
             });
         },
-        refreshButtonClick() {
+        refreshButtonClick: function() {
             this.pageNumber = 1;
             this.refreshList();
             this.lastFilters = Object.assign({}, this.filters);
+        },
+        refreshCategorySelect: function() {
+            let tmp = this.filters.category;
+            this.filters = Object.assign({}, this.lastFilters);
+            this.filters.category = tmp;
+            this.refreshList();
         },
         setPaging: function() {
             if (this.pageSizeSelector === 'Все') {
@@ -155,9 +163,9 @@ export default {
             console.log(i);
             if (i < 1) i = 1;
             if (i > this.totalPages) i = this.totalPages;
+
             this.pageNumber = i;
             this.filters = Object.assign({}, this.lastFilters);
-            
             this.refreshList();
         },
         getAdvertisements: function() {
