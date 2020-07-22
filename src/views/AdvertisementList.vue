@@ -3,12 +3,12 @@
             <div class="">
                 <div>
                     <label>Искать в заголовке: </label>
-                    <input type="text" v-model="filters.title" v-on:input="updateOnEvent" />
+                    <input type="text" v-model="filters.title" @keyup.enter="updateOnEvent" />
                     <button v-on:click="filters.title = '';updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>Искать в описании: </label>
-                    <input type="text" v-model="filters.description" v-on:input="updateOnEvent" />
+                    <input type="text" v-model="filters.description" @keyup.enter="updateOnEvent" />
                     <button v-on:click="filters.description = '';updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
@@ -52,7 +52,7 @@
                 <table border="1">
                     <tr>
                         <th>ID</th>
-                        <th>Заголовок</th>
+                        <th><a>Заголовок</a></th>
                         <th>Описание</th>
                         <th>Дата добавления</th>
                         <th>ID категории</th>
@@ -198,10 +198,10 @@ li {
 a {
   color: blue;
 }
-.page-selector a {
+table a {
     margin: 0 0.25rem;
 }
-.page-selector a:hover {
+table a:hover {
     text-decoration: underline;
     cursor: pointer;
 }
