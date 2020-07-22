@@ -1,31 +1,32 @@
 <template>
         <div id="advertisements">
             <div class="">
+                <h4>{{ isNewFilters }}</h4>
                 <div>
                     <label>Искать в заголовке: </label>
-                    <input type="text" v-model="filters.title" @keyup.enter="updateOnEvent" />
+                    <input type="text" v-model="filters.title" v-on:change="isNewFilters=true;" @keyup.enter="updateOnEvent" />
                     <button v-on:click="filters.title = '';updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>Искать в описании: </label>
-                    <input type="text" v-model="filters.description" @keyup.enter="updateOnEvent" />
+                    <input type="text" v-model="filters.description" v-on:change="isNewFilters=true;" @keyup.enter="updateOnEvent" />
                     <button v-on:click="filters.description = '';updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>Категория: </label>
-                    <select v-model="filters.category" v-on:change="updateOnEvent">
+                    <select v-model="filters.category" v-on:change="isNewFilters=true;updateOnEvent();">
                         <option v-for="elem in categories" :key="elem">{{ elem }}</option>
                     </select>
                     <button v-on:click="filters.category = 'Все';updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>От: </label>
-                    <input type="date" v-model="filters.startDate" v-on:input="updateOnEvent" />
+                    <input type="date" v-model="filters.startDate" v-on:input="isNewFilters=true;updateOnEvent();" />
                     <button v-on:click="filters.startDate = null;updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>До: </label>
-                    <input type="date" v-model="filters.endDate" v-on:input="updateOnEvent" />
+                    <input type="date" v-model="filters.endDate" v-on:input="isNewFilters=true;updateOnEvent();" />
                     <button v-on:click="filters.endDate = null;updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
@@ -79,6 +80,7 @@ export default {
     data: function() {
             return { 
                 advs: null,
+                isNewFilters: false,
                 pageSizeSelector: '',
                 pageNumber: 1,
                 totalPages: 1,
@@ -92,7 +94,6 @@ export default {
                 },
                 sortColumns: 0,
                 sort: null,
-                lastFilters: null,
                 categories: [
                     'Все',
                     'Недвижимость',
@@ -144,7 +145,6 @@ export default {
         updateOnEvent: function() {
             this.pageNumber = 1;
             this.refreshList();
-            this.lastFilters = Object.assign({}, this.filters);
         },
         setPaging: function() {
             if (this.pageSizeSelector === 'Все') {
@@ -157,12 +157,16 @@ export default {
             this.toPage(1);
         },
         toPage: function(i) {
-            console.log(i);
-            if (i < 1) i = 1;
-            if (i > this.totalPages) i = this.totalPages;
+            if (this.isNewFilters === true) {
+                this.pageNumber = 1;
+                this.isNewFilters = false;
+            }
+            else {
+                if (i < 1) i = 1;
+                if (i > this.totalPages) i = this.totalPages;
+                this.pageNumber = i;
+            }
 
-            this.pageNumber = i;
-            this.filters = Object.assign({}, this.lastFilters);
             this.refreshList();
         },
         getAdvertisements: function() {
@@ -176,7 +180,6 @@ export default {
     },
     mounted: function() {
         this.pageSizeSelector = 'Все';
-        this.lastFilters = Object.assign({}, this.filters)
         this.getAdvertisements();
     }
 }
@@ -198,11 +201,11 @@ li {
 a {
   color: blue;
 }
-table a {
-    margin: 0 0.25rem;
-}
-table a:hover {
+a:hover {
     text-decoration: underline;
     cursor: pointer;
+}
+table a {
+    margin: 0 0.25rem;
 }
 </style>
