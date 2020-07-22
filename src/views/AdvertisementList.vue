@@ -220,6 +220,9 @@ export default {
             }
             
             return sortParams;
+        },
+        setCategories: function() {
+            axios.get('http://localhost:8080/category/list').then(response => this.categories = [{id: 0, name: 'Все'}, ...response.data]);
         }
     },
     filters: {
@@ -228,8 +231,8 @@ export default {
         }
     },
     mounted: function() {
-        axios.get('http://localhost:8080/category/list').then(response => this.categories = [{id: 0, name: 'Все'}, ...response.data]);
-        axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
+        this.setCategories();
+        this.refreshList();
     }
 }
 </script>
