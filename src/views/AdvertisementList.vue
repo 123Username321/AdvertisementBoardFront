@@ -1,7 +1,7 @@
 <template>
         <div id="advertisements">
             <div class="">
-                <h4>{{ isNewFilters }}</h4>
+                <h4>Список объявлений</h4>
                 <div>
                     <label>Искать в заголовке: </label>
                     <input type="text" v-model="filters.title" v-on:change="isNewFilters=true;" @keyup.enter="updateOnEvent" />
@@ -49,19 +49,20 @@
                     <a v-on:click="toPage(totalPages)">Последняя</a>
                 </div>
             </div>
-            <div>
+            <div v-if="sort">
                 <table border="1">
                     <tr>
-                        <th>ID</th>
-                        <th><a>Заголовок</a></th>
-                        <th>Описание</th>
-                        <th>Дата добавления</th>
-                        <th>ID категории</th>
+                        <th v-for="(value, property) in sort" :key="property">
+                            <a v-on:click="setSort(property)">{{ value.name }}</a>
+                            <span v-if="!value.isSort">▴▾</span>
+                            <span v-else-if="!value.isDesc">▴</span>
+                            <span v-else>▾</span>
+                            <span v-if="value.isSort">({{ value.number }})</span>
+                        </th>
                     </tr>
                     <template v-for="adv in advs">
                         <tr v-bind:key="adv.id">
-                            <td><a :href="'http://localhost:3000/advertisements/' + adv.id">{{ adv.id }}</a></td>
-                            <td>{{ adv.title }}</td>
+                            <td><a :href="'http://localhost:3000/advertisements/' + adv.id">{{ adv.title }}</a></td>
                             <td>{{ adv.description }}</td>
                             <td>{{ adv.addDateTime | formatTimestamp }}</td>
                             <td>{{ categories[adv.categoryId] }}</td>
@@ -85,6 +86,33 @@ export default {
                 pageNumber: 1,
                 totalPages: 1,
                 isPaging: false,
+                sortNumber: 0,
+                sort: {
+                    title: {
+                        name: 'Заголовок',
+                        isSort: false,
+                        isDesc: false,
+                        number: 0
+                    },
+                    description: {
+                        name: 'Описание',
+                        isSort: false,
+                        isDesc: false,
+                        number: 0
+                    },
+                    addDateTime: {
+                        name: 'Дата добавления',
+                        isSort: false,
+                        isDesc: false,
+                        number: 0
+                    },
+                    'c.name': {
+                        name: 'Категория',
+                        isSort: false,
+                        isDesc: false,
+                        number: 0
+                    }
+                },
                 filters: {
                     title: '',
                     description: '',
@@ -93,7 +121,6 @@ export default {
                     endDate: null
                 },
                 sortColumns: 0,
-                sort: null,
                 categories: [
                     'Все',
                     'Недвижимость',
@@ -114,24 +141,24 @@ export default {
                 request += `page_size=${this.pageSizeSelector}`;
                 request += `&page_number=${this.pageNumber}&`;
             }
-            if (this.filters.title !== '') {
-                request += `title=${this.filters.title}&`;
-            }
-            if (this.filters.description !== '') {
-                request += `description=${this.filters.description}&`;
-            }
             if (this.filters.category !== 'Все') {
-                request += `category_id=${this.categories.indexOf(this.filters.category)}&`;
-            }
-            if (this.filters.startDate !== null) {
-                request += `start_timestamp=${this.filters.startDate} 00:00:00&`;
-            }
-            if (this.filters.endDate !== null) {
-                request += `end_timestamp=${this.filters.endDate} 23:59:59&`;
+                request += `category=${this.categories.indexOf(this.filters.category)}&`;
             }
 
-            axios.get(request).then(response => {
-                console.log(request);
+            let sortParams = this.getSort();
+            if (sortParams !== []) {
+                request += 'sort=' + encodeURI(JSON.stringify(sortParams));
+            }
+            console.log(request);
+            axios.get(request, {
+                params: {
+                    title: this.filters.title,
+                    description: this.filters.description,
+                    start_date: this.filters.startDate === null ? null : this.filters.startDate + ' 00:00:00',
+                    end_date: this.filters.endDate === null ? null : this.filters.endDate + ' 23:59:59'
+                }
+            }).then(response => {
+                //console.log(request);
 
                 if (this.pageSizeSelector === 'Все') {
                     this.advs = response.data;
@@ -169,6 +196,49 @@ export default {
 
             this.refreshList();
         },
+        setSort: function(name) {
+            if (this.sort[name].isSort === false) {
+                this.sort[name].isSort = true;
+                this.sort[name].number = ++this.sortNumber;
+            }
+            else {
+                if (this.sort[name].isDesc === false) {
+                    this.sort[name].isDesc = true;
+                }
+                else {
+                    this.sort[name].isSort = false;
+                    this.sort[name].isDesc = false;
+
+                    for (let value in this.sort) {
+                        if (this.sort[value].number > this.sort[name].number) {
+                            this.sort[value].number--;
+                        }
+                    }
+
+                    this.sort[name].number = 0;
+                    this.sortNumber--;
+                }
+            }
+
+            console.log(this.sort);
+            this.refreshList();
+        },
+        getSort: function() {
+            let sortParams = [];
+
+            for (let i = 1; i < Object.keys(this.sort).length + 1; i++) {
+                for (let value in this.sort) {
+                    if (this.sort[value].number === i) {
+                        sortParams.push({
+                            columnName: value,
+                            isDesc: this.sort[value].isDesc
+                        });
+                    }
+                }
+            }
+            console.log(sortParams);
+            return sortParams;
+        },
         getAdvertisements: function() {
             axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
         }
@@ -205,7 +275,8 @@ a:hover {
     text-decoration: underline;
     cursor: pointer;
 }
-table a {
+table td a {
     margin: 0 0.25rem;
+    color: green;
 }
 </style>
