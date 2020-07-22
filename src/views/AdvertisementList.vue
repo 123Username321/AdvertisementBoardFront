@@ -12,12 +12,12 @@
                     <input type="text" v-model="filters.description" v-on:change="isNewFilters=true;" @keyup.enter="updateOnEvent" />
                     <button v-on:click="filters.description = '';updateOnEvent();">Сбросить</button>
                 </div>
-                <div>
+                <div v-if="categories">
                     <label>Категория: </label>
                     <select v-model="filters.category" v-on:change="isNewFilters=true;updateOnEvent();">
-                        <option v-for="elem in categories" :key="elem">{{ elem }}</option>
+                        <option v-for="elem in categories" :key="elem.id" :value="elem.id">{{ elem.name }}</option>
                     </select>
-                    <button v-on:click="filters.category = 'Все';updateOnEvent();">Сбросить</button>
+                    <button v-on:click="filters.category = 0;updateOnEvent();">{{ filters.category }}</button>
                 </div>
                 <div>
                     <label>От: </label>
@@ -65,7 +65,7 @@
                             <td><a :href="'http://localhost:3000/advertisements/' + adv.id">{{ adv.title }}</a></td>
                             <td>{{ adv.description }}</td>
                             <td>{{ adv.addDateTime | formatTimestamp }}</td>
-                            <td>{{ categories[adv.categoryId] }}</td>
+                            <td>{{ adv.categoryName }}</td>
                         </tr>
                     </template>
                 </table>
@@ -94,7 +94,7 @@ export default {
                 filters: {
                     title: '',
                     description: '',
-                    category: 'Все',
+                    category: 0,
                     startDate: null,
                     endDate: null
                 },
@@ -125,16 +125,7 @@ export default {
                     }
                 },
                 sortNumber: 0,
-                categories: [
-                    'Все',
-                    'Недвижимость',
-                    'Личный транспорт',
-                    'Бытовая техника',
-                    'Персональная электроника',
-                    'Одежда и обувь',
-                    'Спорт и отдых',
-                    'Прочее'
-                ]
+                categories: null
             };
     },
     methods: {
@@ -150,7 +141,7 @@ export default {
                 params: {
                     title: this.filters.title === '' ? null : this.filters.title,
                     description: this.filters.description === '' ? null : this.filters.description,
-                    category: this.filters.category === 'Все' ? null : this.categories.indexOf(this.filters.category),
+                    category: this.filters.category === 0 ? null : this.filters.category,
                     start_date: this.filters.startDate === null ? null : this.filters.startDate + ' 00:00:00',
                     end_date: this.filters.endDate === null ? null : this.filters.endDate + ' 23:59:59',
                     page_size: this.pageSizeSelector === 'Все' ? null : this.pageSizeSelector,
@@ -237,7 +228,7 @@ export default {
             return sortParams;
         },
         getAdvertisements: function() {
-            axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data));
+            axios.get('http://localhost:8080/advertisement/list').then(response => (this.advs = response.data, console.log(response)));
         }
     },
     filters: {
@@ -246,6 +237,8 @@ export default {
         }
     },
     mounted: function() {
+        this.categories = [{ id: 0, name: "Все" }];
+        axios.get('http://localhost:8080/category/list').then(response => {this.categories = this.categories.concat(response.data);});
         this.getAdvertisements();
     }
 }
