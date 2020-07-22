@@ -44,7 +44,7 @@
                     <select v-on:change="toPage(pageNumber)" v-model="pageNumber">
                         <option v-for="i in totalPages" :key="i">{{ i }}</option>
                     </select>
-                    <a v-on:click="toPage(pageNumber + 1)">Следующая</a>
+                    <a v-on:click="toPage(+pageNumber + 1)">Следующая</a>
                     <a v-on:click="toPage(totalPages)">Последняя</a>
                 </div>
             </div>
@@ -123,7 +123,6 @@ export default {
                 request += `&page_size=${this.pageSizeSelector}`;
                 request += `&page_number=${this.pageNumber}`;
             }
-            console.log(this.pageNumber)
 
             axios.get(request).then(response => {
                 console.log(request);
@@ -153,10 +152,12 @@ export default {
             this.toPage(1);
         },
         toPage: function(i) {
+            console.log(i);
             if (i < 1) i = 1;
             if (i > this.totalPages) i = this.totalPages;
             this.pageNumber = i;
             this.filters = Object.assign({}, this.lastFilters);
+            
             this.refreshList();
         },
         getAdvertisements: function() {
