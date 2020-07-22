@@ -3,30 +3,30 @@
             <div class="">
                 <div>
                     <label>Искать в заголовке: </label>
-                    <input type="text" v-model="filters.title"/>
+                    <input type="text" v-model="filters.title" v-on:input="updateOnEvent" />
+                    <button v-on:click="filters.title = '';updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>Искать в описании: </label>
-                    <input type="text" v-model="filters.description"/>
+                    <input type="text" v-model="filters.description" v-on:input="updateOnEvent" />
+                    <button v-on:click="filters.description = '';updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>Категория: </label>
-                    <select v-model="filters.category" v-on:change="refreshCategorySelect">
+                    <select v-model="filters.category" v-on:change="updateOnEvent">
                         <option v-for="elem in categories" :key="elem">{{ elem }}</option>
                     </select>
+                    <button v-on:click="filters.category = 'Все';updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>От: </label>
-                    <input type="date" v-model="filters.startDate" />
-                    <button v-on:click="filters.startDate = null">Сбросить</button>
+                    <input type="date" v-model="filters.startDate" v-on:input="updateOnEvent" />
+                    <button v-on:click="filters.startDate = null;updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>До: </label>
-                    <input type="date" v-model="filters.endDate" />
-                    <button v-on:click="filters.endDate = null">Сбросить</button>
-                </div>
-                <div>
-                    <button v-on:click="refreshButtonClick">Обновить</button>
+                    <input type="date" v-model="filters.endDate" v-on:input="updateOnEvent" />
+                    <button v-on:click="filters.endDate = null;updateOnEvent();">Сбросить</button>
                 </div>
                 <div>
                     <label>Размер страницы: </label>
@@ -107,23 +107,26 @@ export default {
     },
     methods: {
         refreshList: function() {
-            let request = 'http://localhost:8080/advertisement/list';
+            let request = 'http://localhost:8080/advertisement/list?';
 
-            request += `?start_timestamp=${this.filters.startDate === null ? '2000-01-01' : this.filters.startDate} 00:00:00`;
-            request += `&end_timestamp=${this.filters.endDate === null ? '2099-12-31' : this.filters.endDate} 23:59:59`;
-
+            if (this.pageSizeSelector !== 'Все') {
+                request += `page_size=${this.pageSizeSelector}`;
+                request += `&page_number=${this.pageNumber}&`;
+            }
             if (this.filters.title !== '') {
-                request += `&title=${this.filters.title}`;
+                request += `title=${this.filters.title}&`;
             }
             if (this.filters.description !== '') {
-                request += `&description=${this.filters.description}`;
+                request += `description=${this.filters.description}&`;
             }
             if (this.filters.category !== 'Все') {
-                request += `&category_id=${this.categories.indexOf(this.filters.category)}`;
+                request += `category_id=${this.categories.indexOf(this.filters.category)}&`;
             }
-            if (this.pageSizeSelector !== 'Все') {
-                request += `&page_size=${this.pageSizeSelector}`;
-                request += `&page_number=${this.pageNumber}`;
+            if (this.filters.startDate !== null) {
+                request += `start_timestamp=${this.filters.startDate} 00:00:00&`;
+            }
+            if (this.filters.endDate !== null) {
+                request += `end_timestamp=${this.filters.endDate} 23:59:59&`;
             }
 
             axios.get(request).then(response => {
@@ -138,16 +141,10 @@ export default {
                 }
             });
         },
-        refreshButtonClick: function() {
+        updateOnEvent: function() {
             this.pageNumber = 1;
             this.refreshList();
             this.lastFilters = Object.assign({}, this.filters);
-        },
-        refreshCategorySelect: function() {
-            let tmp = this.filters.category;
-            this.filters = Object.assign({}, this.lastFilters);
-            this.filters.category = tmp;
-            this.refreshList();
         },
         setPaging: function() {
             if (this.pageSizeSelector === 'Все') {
