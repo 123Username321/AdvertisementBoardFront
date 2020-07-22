@@ -82,11 +82,22 @@ export default {
             return { 
                 advs: null,
                 isNewFilters: false,
-                pageSizeSelector: '',
+                pageSizeSelector: 'Все',
                 pageNumber: 1,
                 totalPages: 1,
                 isPaging: false,
-                sortNumber: 0,
+                // page: {
+                //     number: 1,
+                //     total: 1,
+                //     isPaging: false
+                // },
+                filters: {
+                    title: '',
+                    description: '',
+                    category: 'Все',
+                    startDate: null,
+                    endDate: null
+                },
                 sort: {
                     title: {
                         name: 'Заголовок',
@@ -113,14 +124,7 @@ export default {
                         number: 0
                     }
                 },
-                filters: {
-                    title: '',
-                    description: '',
-                    category: 'Все',
-                    startDate: null,
-                    endDate: null
-                },
-                sortColumns: 0,
+                sortNumber: 0,
                 categories: [
                     'Все',
                     'Недвижимость',
@@ -137,14 +141,6 @@ export default {
         refreshList: function() {
             let request = 'http://localhost:8080/advertisement/list?';
 
-            if (this.pageSizeSelector !== 'Все') {
-                request += `page_size=${this.pageSizeSelector}`;
-                request += `&page_number=${this.pageNumber}&`;
-            }
-            if (this.filters.category !== 'Все') {
-                request += `category=${this.categories.indexOf(this.filters.category)}&`;
-            }
-
             let sortParams = this.getSort();
             if (sortParams !== []) {
                 request += 'sort=' + encodeURI(JSON.stringify(sortParams));
@@ -154,12 +150,13 @@ export default {
                 params: {
                     title: this.filters.title,
                     description: this.filters.description,
+                    category: this.filters.category === 'Все' ? null : this.categories.indexOf(this.filters.category),
                     start_date: this.filters.startDate === null ? null : this.filters.startDate + ' 00:00:00',
-                    end_date: this.filters.endDate === null ? null : this.filters.endDate + ' 23:59:59'
+                    end_date: this.filters.endDate === null ? null : this.filters.endDate + ' 23:59:59',
+                    page_size: this.pageSizeSelector === 'Все' ? null : this.pageSizeSelector,
+                    page_number: this.pageSizeSelector === 'Все' ? null : this.pageNumber
                 }
             }).then(response => {
-                //console.log(request);
-
                 if (this.pageSizeSelector === 'Все') {
                     this.advs = response.data;
                 }
@@ -249,13 +246,12 @@ export default {
         }
     },
     mounted: function() {
-        this.pageSizeSelector = 'Все';
         this.getAdvertisements();
     }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style scoped>
 h3 {
   margin: 40px 0 0;
