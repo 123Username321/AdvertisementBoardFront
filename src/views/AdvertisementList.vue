@@ -179,6 +179,7 @@ export default {
     },
     mounted: function() {
         this.pageSizeSelector = 'Все';
+        this.lastFilters = Object.assign({}, this.filters)
         this.getAdvertisements();
     }
 }
