@@ -4,12 +4,17 @@ import AdvertisementRoot from '../views/AdvertisementRoot.vue'
 import AdvertisementList from '../views/AdvertisementList.vue'
 import Advertisement from '../views/Advertisement.vue'
 
+export const RouteName = {
+  ADVERTISEMENT_LIST: 'advertisementList',
+  ADVERTISEMENT: 'advertisement'
+}
+
 Vue.use(VueRouter)
 
   const routes = [
   {
     path: '/',
-    redirect: { name: 'advertisementList' }
+    redirect: { name: RouteName.ADVERTISEMENT_LIST }
   },
   {
     path: '/advertisements',
@@ -17,16 +22,16 @@ Vue.use(VueRouter)
     children: [
       {
         path: '',
-        redirect: { name: 'advertisementList' }
+        redirect: { name: RouteName.ADVERTISEMENT_LIST }
       },
       {
         path: 'list',
-        name: 'advertisementList',
+        name: RouteName.ADVERTISEMENT_LIST,
         component: AdvertisementList
       },
       {
         path: ':id',
-        name: 'advertisement',
+        name: RouteName.ADVERTISEMENT,
         component: Advertisement
       }
     ]
